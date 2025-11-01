@@ -1,5 +1,7 @@
 # Anki CSV/TSV Importer
 
+[![Version](https://img.shields.io/badge/version-v1.28.8-blue)](https://github.com/kardenwort/20250913123240-kardenwort-anki-csv-importer)  [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 Imports a local or remote CSV/TSV file (including files stored in Google Sheets) into an Anki deck.
 
 This script is designed for robustness and flexibility, featuring:

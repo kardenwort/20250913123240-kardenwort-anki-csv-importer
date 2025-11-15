@@ -1,13 +1,16 @@
 # Anki CSV/TSV Importer
 
-[![Version](https://img.shields.io/badge/version-v1.28.8-blue)](https://github.com/kardenwort/20250913123240-kardenwort-anki-csv-importer)  [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-
 Imports a local or remote CSV/TSV file (including files stored in Google Sheets) into an Anki deck.
 
-This script is designed for robustness and flexibility, featuring:
+[![Version](https://img.shields.io/badge/version-v1.44.2-blue)](https://github.com/kardenwort/20250913122858-kardenwort)  [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+This script is a powerful bridge between your data and Anki, designed for robustness and advanced integration.
+
+**Key Features:**
 - **Batch Processing**: Reliably imports very large files by processing notes in chunks.
 - **Dynamic Deck Assignment**: Automatically routes notes to different decks based on a `Deck` column in your source file.
 - **Smart Updates**: Updates existing notes based on a unique field (prioritizing `Quotation`, then `Front`) without resetting scheduling.
+- **Deck Description Management**: Automatically updates Anki deck descriptions from a companion JSON metadata file.
 - **Workflow Control**: An option to suspend all imported cards, allowing you to introduce them into your study queue at your own pace.
 
 ## Table of Contents
@@ -20,6 +23,8 @@ This script is designed for robustness and flexibility, featuring:
     - [Without AnkiConnect](#without-ankiconnect)
   - [Getting the CSV URL for a Google Sheet](#getting-the-csv-url-for-a-google-sheet)
   - [File Format](#file-format)
+    - [TSV/CSV Data File](#tsvcsv-data-file)
+    - [JSON Metadata File (Optional)](#json-metadata-file-optional)
   - [HTML Formatting](#html-formatting)
   - [How Sheet Modifications Are Handled](#how-sheet-modifications-are-handled)
   - [Notes](#notes)
@@ -31,14 +36,15 @@ This script is designed for robustness and flexibility, featuring:
 The script is controlled via command-line arguments.
 
 | Argument | Description | Required |
-|---|---|:---:|
+| :--- | :--- | :--- |
 | `--path`, `-p` | Path to the local CSV/TSV file. You must provide either `--path` or `--url`. | No |
 | `--url`, `-u` | URL of the remote CSV file. You must provide either `--path` or `--url`. | No |
 | `--deck`, `-d` | The default deck name to import notes into. Becomes optional if a `Deck` column is present in your source file. | Conditional |
 | `--note`, `-n` | The name of the Anki note type to use for all imported cards. | **Yes** |
+| `--deck-metadata-file` | Path to a JSON file containing deck metadata, such as descriptions. | No |
 | `--sync`, `-s` | If present, automatically triggers an Anki synchronization after the import is complete. | No |
 | `--suspend` | If present, all newly added and updated cards will be suspended upon import. | No |
-| `--no-anki-connect`| A flag to bypass AnkiConnect and write directly to the Anki database. **Use with caution.** | No |
+| `--no-anki-connect` | A flag to bypass AnkiConnect and write directly to the Anki database. **Use with caution.** | No |
 | `--col`, `-c` | The full path to your `collection.anki2` file. **Required** if using `--no-anki-connect`. | No |
 | `--allow-html` | Renders HTML in fields instead of treating it as plain text. Only for use with `--no-anki-connect`. | No |
 | `--skip-header` | Skips the first row of the source file. Only for use with `--no-anki-connect`. | No |
@@ -51,7 +57,15 @@ The script is controlled via command-line arguments.
 
 This is the safest and most powerful way to use the importer.
 
-1.  Install the [AnkiConnect plugin](https://ankiweb.net/shared/info/2055492159) via Anki's add-on manager.
+1.  **Install the AnkiConnect add-on**.
+    > ⚠️ **Important Dependency for Deck Descriptions**
+    > The new feature for updating Anki deck descriptions (`--deck-metadata-file`) **requires a specific, modified version of AnkiConnect**.
+    >
+    > Please download and install it from this repository:
+    > **[https://github.com/voothi/20251110002755-anki-ankiconnect](https://github.com/voothi/20251110002755-anki-ankiconnect)**
+    >
+    > If you use the standard AnkiConnect add-on, all other features will work correctly, but deck descriptions will not be updated.
+
 2.  Install Python 3 and `pip3`.
 3.  Clone this repository (`git clone https://github.com/kardenwort/20250913123240-kardenwort-anki-csv-importer`).
 4.  In your terminal, navigate to the repository folder and install dependencies: `pip3 install requests`.
@@ -62,13 +76,16 @@ This is the safest and most powerful way to use the importer.
 
 ```bash
 # Import from a local file, using a default deck
-./anki-importer.py --path "/path/to/notes.tsv" --note "Basic" --deck "My Subject"
+./anki-csv-importer.py --path "/path/to/notes.tsv" --note "Basic" --deck "My Subject"
 
 # Import from a remote URL, with dynamic decks defined in the file
-./anki-importer.py --url "<published_google_sheet_url>" --note "Vocabulary"
+./anki-csv-importer.py --url "<published_google_sheet_url>" --note "Vocabulary"
+
+# Import notes and also update deck descriptions from a companion JSON file
+./anki-csv-importer.py --path "notes.tsv" --note "Kardenwort" --deck-metadata-file "notes.json"
 
 # Import and suspend all new cards, then sync
-./anki-importer.py --path "new_vocab.tsv" --note "Basic" --deck "Pending" --suspend --sync
+./anki-csv-importer.py --path "new_vocab.tsv" --note "Basic" --deck "Pending" --suspend --sync
 ```
 
 ### Without AnkiConnect
@@ -103,6 +120,10 @@ To get a stable URL for a private or public sheet:
 
 ## File Format
 
+The script is designed to work with a pair of files: a main data file and an optional metadata file.
+
+### TSV/CSV Data File
+
 The script works best with a TSV (Tab-Separated Values) or CSV file that includes a header row.
 
 The first row **must** be a header containing the exact field names of your Anki note type.
@@ -114,11 +135,27 @@ The first row **must** be a header containing the exact field names of your Anki
 
 If a `Deck` column is not provided in your file, you **must** specify a default deck using the `--deck` argument.
 
-**Example TSV File:**
+**Example TSV File (`my_deck.tsv`):**
 ```tsv
 Quotation	Translation	Tags	Deck
 "To be or not to be"	"Быть или не быть"	shakespeare classics	English::Literature
 "Veni, vidi, vici"	"Пришел, увидел, победил"	latin history	Latin::Quotes
+```
+
+### JSON Metadata File (Optional)
+
+To automatically update deck descriptions, provide a JSON file with the same base name as your data file (e.g., `my_deck.json`). Pass its path to the `--deck-metadata-file` argument.
+
+The JSON file should have a top-level key `deck_descriptions`, which contains a dictionary mapping deck names to their desired description strings.
+
+**Example JSON File (`my_deck.json`):**
+```json
+{
+  "deck_descriptions": {
+    "English::Literature": "This deck contains famous quotes from English literature, primarily Shakespeare.",
+    "Latin": "A collection of well-known Latin phrases and their meanings."
+  }
+}
 ```
 
 [Back to Top](#table-of-contents)

@@ -1,4 +1,3 @@
-```markdown
 # Anki CSV/TSV Importer
 
 Imports a local or remote CSV/TSV file (including files stored in Google Sheets) into an Anki deck.
@@ -29,7 +28,6 @@ This script is a powerful bridge between your data and Anki, designed for robust
   - [HTML Formatting](#html-formatting)
   - [How Sheet Modifications Are Handled](#how-sheet-modifications-are-handled)
   - [Notes](#notes)
-  - [TODO](#todo)
   - [Kardenwort Ecosystem](#kardenwort-ecosystem)
   - [License](#license)
 

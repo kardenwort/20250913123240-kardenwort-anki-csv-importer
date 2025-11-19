@@ -1,3 +1,4 @@
+```markdown
 # Anki CSV/TSV Importer
 
 Imports a local or remote CSV/TSV file (including files stored in Google Sheets) into an Anki deck.
@@ -29,6 +30,7 @@ This script is a powerful bridge between your data and Anki, designed for robust
   - [How Sheet Modifications Are Handled](#how-sheet-modifications-are-handled)
   - [Notes](#notes)
   - [TODO](#todo)
+  - [Kardenwort Ecosystem](#kardenwort-ecosystem)
   - [License](#license)
 
 ## Usage
@@ -49,7 +51,7 @@ The script is controlled via command-line arguments.
 | `--allow-html` | Renders HTML in fields instead of treating it as plain text. Only for use with `--no-anki-connect`. | No |
 | `--skip-header` | Skips the first row of the source file. Only for use with `--no-anki-connect`. | No |
 
-[Back to Top](#table-of-contents)
+[Return to Top](#table-of-contents)
 
 ## Instructions
 
@@ -104,7 +106,7 @@ If you accept these risks:
 **To find your `collection.anki2` path:**
 Refer to the [Anki Manual](https://docs.ankiweb.net/#/files?id=file-locations). For a profile named `User1` on macOS, the path is typically `~/Library/Application Support/Anki2/User1/collection.anki2`.
 
-[Back to Top](#table-of-contents)
+[Return to Top](#table-of-contents)
 
 ## Getting the CSV URL for a Google Sheet
 
@@ -116,7 +118,7 @@ To get a stable URL for a private or public sheet:
 4.  Choose **Comma-separated values (.csv)** from the dropdown menu.
 5.  Click **Publish** and copy the generated URL. This is the URL to use with the `--url` argument.
 
-[Back to Top](#table-of-contents)
+[Return to Top](#table-of-contents)
 
 ## File Format
 
@@ -158,7 +160,7 @@ The JSON file should have a top-level key `deck_descriptions`, which contains a 
 }
 ```
 
-[Back to Top](#table-of-contents)
+[Return to Top](#table-of-contents)
 
 ## HTML Formatting
 
@@ -168,7 +170,7 @@ When using the `--no-anki-connect` method, HTML is disabled by default. Use the 
 
 To display HTML code as plain text (e.g., to show `<b>` on a card), use HTML entities: `&lt;b&gt;`.
 
-[Back to Top](#table-of-contents)
+[Return to Top](#table-of-contents)
 
 ## How Sheet Modifications Are Handled
 
@@ -178,7 +180,7 @@ The script intelligently handles changes to your source file:
 *   **Modified Rows**: The script identifies existing notes by checking for a unique field, trying `Quotation` first, then falling back to `Front`. If a match is found, the note in Anki is updated with the new field content without affecting its review schedule.
 *   **Deleted Rows**: Deleting a row in your source file **does not** delete the corresponding note from your Anki collection. This must be done manually within Anki.
 
-[Back to Top](#table-of-contents)
+[Return to Top](#table-of-contents)
 
 ## Notes
 
@@ -186,16 +188,16 @@ The script intelligently handles changes to your source file:
 - **Media**: Importing media files (audio, images) is not currently supported.
 - **Continuous Sync**: To keep a remote sheet synchronized with Anki, set up a cron job (macOS/Linux) or a Scheduled Task (Windows) to run this script at a regular interval.
 
-[Back to Top](#table-of-contents)
+[Return to Top](#table-of-contents)
 
-## TODO
+## Kardenwort Ecosystem
 
-- [ ] Support for importing media files (audio, images).
+This project is part of the **[Kardenwort](https://github.com/kardenwort)** environment, designed to create a focused and efficient learning ecosystem.
 
-[Back to Top](#table-of-contents)
+[Return to Top](#table-of-contents)
 
 ## License
 
 [MIT](./LICENSE)
 
-[Back to Top](#table-of-contents)
+[Return to Top](#table-of-contents)

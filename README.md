@@ -31,6 +31,8 @@ This script is a powerful bridge between your data and Anki, designed for robust
   - [Kardenwort Ecosystem](#kardenwort-ecosystem)
   - [License](#license)
 
+---
+
 ## Usage
 
 The script is controlled via command-line arguments.
